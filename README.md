@@ -1,5 +1,5 @@
 # GetTicket
-My final project for advanced programming in Java course (seminar project). This is a webapp meant to manage a tickets-selling system for shows, movies, etc. The project's technologies include: XHTML, JPA, JSF. It was deployed only localy with GlassFish server for demonstartion, with a local PostgreSQL database.
+My final project for advanced programming in Java course (seminar project). This is a webapp meant to manage a tickets-selling system for shows, movies, etc. The project's technologies include: XHTML, JPA, JSF. It was deployed only locally with GlassFish server for demonstartion, with a local PostgreSQL database.
 
 # Requirments / Dependecies
 This project is a Maven Netbeans 14 project and it requires: <br/>
