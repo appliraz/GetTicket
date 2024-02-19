@@ -3,7 +3,7 @@ My final project for advanced programming in Java course (seminar project). This
 
 # Requirments / Dependecies
 This project is a Maven Netbeans 14 project and it requires:
-JAVA EE 7
+JAVA EE 7__
 JDK 1.8
 JSF 2.2
 Glassfish 4.1
