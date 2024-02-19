@@ -1,0 +1,176 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+
+
+
+.wrapper{
+    font-family: Segoe UI, Arial;
+    display: flex;
+    flex-wrap: wrap;
+    width: 1160px;
+    justify-content: center;
+    font-size: 1.2em;
+    padding: 50px;
+}
+
+.logo{
+    width: 100%;
+    order: 1;
+}
+
+.message{
+    min-height: 100px;
+    margin-right: auto;
+    margin-left: 0;
+    order: 2;
+    width: 65%;
+    font-family: Segoe UI, Arial;
+    font-size: 1.2em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-items: flex-end;
+    align-items: center;
+}
+
+.healine{
+    margin-right: auto;
+}
+
+.showdetails{
+    
+    order:3;
+    display: flex;
+    flex-wrap: wrap;
+    width: 60%;
+    margin-right: auto;
+    justify-items: center;
+    max-height: 600px;
+    align-items: center;
+    padding: 10px;
+      
+}
+
+    .showname{
+        order: 1;
+        width: 60%;
+        max-height: 120px;
+        margin-left: auto;
+    }
+
+    .showimg{
+        order: 2;
+        min-width: 100%;
+        margin: 0 auto;
+    }
+
+
+.details{
+    order: 4;
+    display: flex;
+    flex-wrap: wrap;
+    width: 70%;
+    margin-right: auto;
+    justify-items: center;
+}
+
+
+    .clientdetails{
+        order: 1;
+        display: flex;
+        flex-wrap: wrap;
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .rundetails{
+        order: 2;
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .orderdetails{
+        order: 3;
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+.filler{
+    order: 5;
+    width:100%;
+    height: 40px;
+}
+
+
+.tickets{
+    order: 6;
+   
+}
+
+.ticket{
+    display: flex;
+    flex-wrap: wrap;
+    width: 960px;
+    max-height: 180px;
+    border: solid black;
+    justify-content: space-between;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.15em;
+    padding: 5px;
+}
+
+    .showticket{
+        order:1;
+        flex-grow: 2;
+        max-width: 150px;
+        padding: 5px;
+    }
+    
+    .venueticket{
+        order: 2;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 150px;
+        flex-grow: 2;
+        padding: 5px;
+        margin-right: auto;
+    }
+    
+    .runticket{
+        order: 3;
+        max-width: 300px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .sitting{
+        order: 4;
+        flex-grow: 1;
+        max-width: 125px;
+        margin-right: auto;
+        margin-left: 0;
+    }
+    
+    .standing {
+        min-width: 0;
+        order: 4;
+        flex-grow: 1;
+        margin: 0 auto;
+        font-size: 0.8em;
+        max-width: 125px;
+    }
+    
+    .comments {
+        order: 5;
+        flex-grow: 2;
+        max-width: 260px;
+        margin-left: 0;
+        margin-right: auto;
+        font-size: 0.7em;
+    }

@@ -1,0 +1,57 @@
+.placeholder{
+            width: 50px;
+            height: 50px;
+            background-color: grey;
+            border-color: lightslategray;
+            padding: 2px;
+        }
+
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.selected{
+            width: 50px;
+            height: 50px;
+            background-color: darkolivegreen;
+            border-color: lightslategray;
+            padding: 2px;            
+        }
+
+
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.disabled{
+            width: 50px;
+            height: 50px;
+            background-color: firebrick;
+            color: firebrick;
+            border-color: lightslategray;
+            padding: 2px;
+        }
+
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.enabled{
+	width: 50px;
+        height: 50px;
+        background-color: forestgreen;
+        border-color: lightslategray;
+        padding: 2px;
+}
+
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.availableseat{
+            width: 50px;
+            height: 50px;
+            background-color: firebrick;
+            color: firebrick;
+            border-color: lightslategray;
+            padding: 2px;
+        }
+
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.availableseat{
+	width: 50px;
+        height: 50px;
+        background-color: forestgreen;
+        border-color: lightslategray;
+        padding: 2px;
+        
+}
+
+
+.connect-window * {
+    padding: 20px;
+    
+}

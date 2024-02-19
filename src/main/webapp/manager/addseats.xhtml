@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>הוסף מושבים</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form id="form" style="max-width: 800px;">
+            <p:growl id="messages" showDetail="true"/>
+            <p:toolbar id="tollbar">
+                <p:toolbarGroup>
+                    <h:outputText value="#{seatsPopulator.selectedHall.venueid.venuename} " style="font-weight: bold; margin:10px;"/>
+                    <h:outputText value="#{seatsPopulator.selectedHall.hallname} " style="font-weight: bold; margin:10px;"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+            <p:outputPanel id="nowork" rendered="#{!seatsPopulator.allowAddingSeats()}">
+                <h:outputText value="האולם הזה אוכלס במלואו - כל הכיסאות רשומים במערכת"/>
+            </p:outputPanel>
+            
+            
+            <p:toolbar id="sittingbar" rendered="#{!seatsPopulator.standing}">
+                <p:toolbarGroup rendered="#{seatsPopulator.allowAddingSeats()}">
+                    <h:outputText value="כמה שורות יש באולם?"/>
+                    <p:inputNumber id="rowsnumber" value="#{seatsPopulator.rows}"/>
+                    <p:commandButton value="הוסף" actionListener="#{seatsPopulator.initMap}" update="form:seatsdiv form:footer" style="padding: 10px;"/>
+                </p:toolbarGroup>
+            </p:toolbar> 
+            
+            <p:panelGrid id="seatsdiv" class="seatsdiv" columns="2">
+                <c:forEach id="dt-seats" var="seat" items="#{seatsPopulator.seatsList}" rendered="#{seatsPopulator.mapReady and seatsPopulator.allowAddingSeats()}">      
+                    <p:column>
+                            <p:outputLabel for="rowval" value="שורה: "/>
+                            <p:outputLabel id="rowval" value= "#{seat.row}"/>
+                    </p:column>
+                    <p:column>
+                            <p:outputLabel for="seatval" value="כמות מושבים: "/>
+                            <p:inputNumber id="seatval" value="#{seat.seat}"> 
+                                <p:ajax process="@this" listener="#{seatsPopulator.calcSum}" update="sumput"/>
+                            </p:inputNumber>
+                    </p:column>
+                </c:forEach>
+            </p:panelGrid>
+            
+            <p:toolbar id="footer">
+                <p:toolbarGroup id="sumbar"  rendered="#{seatsPopulator.mapReady and seatsPopulator.allowAddingSeats()}">
+                    <p:outputLabel for="sumput" value="כסאות שנוספו: "/>
+                    <h:outputText id="sumput" value="#{seatsPopulator.sum}" 
+                                  style="size:12px; border-style: solid; border-color:black; background-color:white; padding:2px;"/>
+                    <h:outputText value="מקסימום כיסאות: "/>
+                    <h:outputText value="#{seatsPopulator.selectedHall.hallcapacity}"/>
+                    <p:commandButton value="אכלס" action="#{seatsPopulator.populateSittingHall}" update="form" ajax="false" style="padding: 5px;"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+            
+            <p:toolbar id="standingbar" rendered="#{seatsPopulator.standing}">
+                <p:toolbarGroup rendered="#{seatsPopulator.allowAddingSeats()}">
+                    <h:outputText value="לאכלס אולם?"/>
+                    <p:commandButton value="אכלס" action="#{seatsPopulator.populateStandingHall}" update="form" ajax="false" style="padding: 10px;"/>
+                </p:toolbarGroup>
+            </p:toolbar> 
+            
+        </h:form>
+    </h:body>
+</html>

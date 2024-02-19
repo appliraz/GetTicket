@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"     
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>עמוד מופע</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/showpageStyles.css"/>
+    </h:head>
+    <f:metadata>
+        <f:viewParam name="selectedshow" value="#{showpageController.showid}"/>
+        <f:viewAction action = "#{showpageController.initShowpage}"/>
+    </f:metadata>
+    <h:body>
+            <ui:include src="/client/header.xhtml"/>
+            <ui:include src="/client/navigationbar.xhtml"/>
+            <h:form id="form">
+                <p:growl id="messages" showDetail="true"/>
+                <div class="wrapper">
+                    <div class="panel">
+                        <div class="title">
+                        <h:outputText value="#{showpageController.selectedShow.showtitle}"/>
+                        </div>
+                        <div class="img">
+                            <p:graphicImage value = "#{imageHelper.img}" height="480" width="380">
+                                <f:param name="postername" value="#{showpageController.selectedShow.showposter}"/>
+                            </p:graphicImage>
+                        </div>
+                        <div class="rating">
+                            <p:rating value="#{showpageController.selectedShow.showrating}" readonly="true"/>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="details">
+                            <h:outputText value=" #{showpageController.selectedShow.showtype} "/>
+                            <h:outputText value=" #{showpageController.selectedShow.showgenre} "/>
+                            <br/>
+                            <h:outputText value="אורך המופע כ #{showpageController.selectedShow.showlength} דקות"/>
+                            <br/>
+                            <h:outputText value="בהפקת #{showpageController.selectedShow.showproducer}"/>
+                        </div>
+                        <br/>
+                        <br/>
+                        <div class="info">
+                            <h:outputText value="#{showpageController.selectedShow.showdescription}"/>   
+                        </div>      
+                    </div>
+                    <div class="noruns">
+                            <h:outputText value="אין כרטיסים זמינים למופע זה" rendered="#{showpageController.runs.size()==0}"/> 
+                    </div>
+                    <div class="scroller-container">
+                        <p:dataScroller value="#{showpageController.runs}" var="run" chunkSize="6" class="runscroll" rendered="#{showpageController.runs.size()>0}">
+                            <div class="run">
+                                <div class="location">
+                                    <h:outputText class="venue" value="#{run.hallid.venueid.venuename}"/>
+                                    <br/>
+                                    <h:outputText value="#{run.hallid.hallname}"/>
+                                </div>
+                                <div class="time">
+                                    <h:outputText class="date" value="#{showpageController.getDateFormat(run.rundate)}"/>
+                                    <br/>
+                                    <h:outputText value="#{showpageController.getHourFormat(run.runhour)}"/>
+                                </div>
+                                <h:outputText class="price" value="#{run.runprice} שח"/>
+                                <br/>
+                                <div class="runinfo">
+                                    <h:outputText value="#{run.runinfo}"/>
+                                </div>
+                                <div class="button">
+                                    <p:commandButton value="להזמנת כרטיסים" process="@this" action="#{showpageController.orderRedirect()}">
+                                        <f:setPropertyActionListener value="#{run}" target="#{showpageController.selectedRun}" />
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                            <br/>
+                        </p:dataScroller>
+                    </div>
+                    <div class="noreviews">
+                            <h:outputText value="עדיין לא נכתבו ביקורות למופע זה" rendered="#{showpageController.reviews.size()==0}"/> 
+                    </div>
+                    <div class="reviews">
+                        <p:dataScroller value="#{showpageController.reviews}" var="review" chunkSize="6" styleClass="reviewscroll" rendered="#{showpageController.reviews.size()>0}">
+                            <div class="review">
+                                <div class="writer">
+                                    <h:outputText value="#{review.clientid.clientfirstname}"/>                              
+                                </div>
+                                <div style="width: 50px"/>
+                                <div class="content">
+                                    <h:outputText class="content" value="#{review.reviewcontent}"/>
+                                </div>
+                                <div class="reviewrating">
+                                     <p:rating value="#{review.rating}" readonly="true"/>
+                                </div>
+                            </div>
+                            <br/>
+                        </p:dataScroller>
+                    </div>
+                    <div class="addreview">
+                        <div class="reviewbtn">
+                            <p:commandButton value="הוסיפו ביקורת" action="#{showpageController.toggle()}" update="form"/>
+                        </div>
+                        <p:panel id="reviewarea" rendered="#{showpageController.reviewToggle}" styleClass="reviewarea">
+                            <div class="reviewarea">   
+                                <h:inputTextarea value="#{showpageController.newReview}" cols="40" rows="8" styleClass="reviewinput"/>
+                                <p:rating value="#{showpageController.newRating}" styleClass="ratinginput"/>
+                                <div class="addbtn">
+                                    <p:commandButton value="אישור" process="reviewarea" actionListener="#{showpageController.addReview}" update="form"/>
+                                </div>
+                            </div>
+                        </p:panel>
+                    </div>
+               </div>       
+            </h:form>
+            <ui:include src="/client/footer.xhtml"/>
+    </h:body>
+</html>

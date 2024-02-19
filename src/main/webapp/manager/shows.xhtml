@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions">      
+    <h:head>
+        <title>ניהול מופעים</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/managerStyles.css"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="חדש" actionListener="#{showController.newShow}" style="background-color: green; color: white;"
+                                     update =":dialogs:manage-show-content" oncomplete="PF('manageShowDialog').show()">
+                        <p:resetInput target=":dialogs:manage-show-content" />
+                    </p:commandButton>
+                    <p:commandButton id="delete-shows-button" value="מחק מופעים"
+                        style="background-color: red; color:white;" 
+                        disabled="#{!showController.hasSelectedShows()}" update="@this" 
+                        oncomplete="PF('deleteSelectedShowsDialog').show()">                      
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+             <!--output table-->
+            <p:dataTable id="dt-shows" widgetVar="dtShows" var="show" value="#{showController.shows}" selectionMode = "multiple" selection="#{showController.selectedShows}"
+                         reflow = "true" rowKey="#{show.showid}" scrollable ="true" rowSelectMode ="add">
+                <f:facet name="header">
+                    <div class="shows-table-header">
+                        <span style="font-weight: bold">מופעים</span> 
+                        <span
+                            class="filter-container ui-input-icon-left"> 
+                            <i class="pi pi-search"></i> 
+                            <p:inputText id="globalFilter" onkeyup="PF('dtShows').filter()" placeholder="חפש מתחם" />
+                        </span>
+                    </div>
+                </f:facet>
+                <p:ajax event="rowSelect" update=":form:delete-shows-button" />
+                <p:ajax event="rowUnselect" update=":form:delete-shows-button" />
+                <p:ajax event="rowSelectCheckbox" update=":form:delete-shows-button" />
+                <p:ajax event="rowUnselectCheckbox" update=":form:delete-shows-button" />
+                <p:ajax event="toggleSelect" update=":form:delete-shows-button" />     
+                <p:column headerText="מזהה" sortBy="#{show.showid}" filterBy="#{show.showid}">
+                    <h:outputText value="#{show.showid}" />
+                </p:column>
+                <p:column headerText="תמונה" exportable="false">
+                    <p:graphicImage value ="#{imageHelper.img}" height="220" width="160">
+                        <f:param name="postername" value="#{show.showposter}"/>
+                    </p:graphicImage>
+                </p:column>
+                <p:column headerText="שם" sortBy="#{show.showtitle}" filterBy="#{show.showtitle}">
+                    <h:outputText value="#{show.showtitle}" />
+                </p:column>
+                <p:column headerText="סוג מוגבל לערכים מסויימים" sortBy="#{show.showtype}" filterBy="#{show.showtype}">
+                    <h:outputText value="#{show.showtype}" />
+                </p:column>
+                <p:column headerText="אורך בדקות" sortBy="#{show.showlength}" filterBy="#{show.showlength}">
+                    <h:outputText value="#{show.showlength}" />
+                </p:column>
+                <p:column headerText="ז'אנר" sortBy="#{show.showgenre}" filterBy="#{show.showgenre}">
+                    <h:outputText value="#{show.showgenre}" />
+                </p:column>
+                <p:column headerText="תיאור" sortBy="#{show.showdescription}" filterBy="#{show.showdescription}">
+                    <h:outputText value="#{of:abbreviate(show.showdescription, 110)}"/>
+                </p:column>
+                <p:column headerText="הפקה" sortBy="#{show.showproducer}" filterBy="#{show.showproducer}">
+                    <h:outputText value="#{show.showproducer}" />
+                </p:column>
+                <p:column headerText="דירוג" sortBy="#{show.showrating}">
+                    <p:rating value="#{show.showrating}" readonly="true"/>
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandButton value = "עריכה" update=":dialogs:manage-show-content"
+                        oncomplete="PF('manageShowDialog').show()"
+                        process="@this" style="background-color: yellowgreen; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{show}" target="#{showController.selectedShow}" />
+                        <p:resetInput target=":dialogs:manage-show-content" />
+                    </p:commandButton>
+                    <p:commandButton value="מחיקה" process="@this" oncomplete="PF('deleteShowDialog').show()" style="background-color: red; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{show}" target="#{showController.selectedShow}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="dialogs">
+            <!--input/edit dialog-->
+            <p:dialog header="Show Details" showEffect="fade" modal="true" widgetVar="manageShowDialog"
+                responsive="true">
+                <p:outputPanel id="manage-show-content" >
+                    <p:outputPanel rendered="#{not empty showController.selectedShow}">
+                        <div class="field">
+                            <p:outputLabel for="title">שם</p:outputLabel>
+                            <p:inputText id="title" value="#{showController.selectedShow.showtitle}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="length">אורך </p:outputLabel>
+                            <p:inputText id="length" value="#{showController.selectedShow.showlength}" required="true" />
+                        </div>
+                         <div class="field"> 
+                            <p:outputLabel for="genre">ז'אנר </p:outputLabel>
+                            <p:inputText id="genre" value="#{showController.selectedShow.showgenre}" required="false" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="producer">הפקה</p:outputLabel>
+                            <p:inputText id="producer" value="#{showController.selectedShow.showproducer}" required="false" />
+                        </div>
+                        <div>
+                            <p:outputLabel for="select-type">סוג המופע </p:outputLabel>
+                            <p:selectOneMenu id="select-type" value="#{showController.selectedShow.showtype}">
+                                <f:selectItem itemLabel = "סרט" itemValue ="סרט"/>
+                                <f:selectItem itemLabel = "הצגה" itemValue ="הצגה"/>
+                                <f:selectItem itemLabel = "קונצרט" itemValue ="קונצרט"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="description">תיאור</p:outputLabel>
+                            <p:inputTextarea id="description" value="#{showController.selectedShow.showdescription}" required="false" autoResize="false" cols="40" rows="10" />
+                        </div>
+                        <div>
+                            <p:outputLabel for="poster">תמונה</p:outputLabel>
+                            <!--rendered="#{!empty showController.selectedShow.showposter}"-->
+                            <p:graphicImage id="poster" value="#{imageHelper.img}" alt="nope" height="80" width="80">
+                                <f:param name="postername" value="#{showController.selectedShow.showposter}"/>
+                            </p:graphicImage>
+                            <p:fileUpload listener="#{showController.uploadImage}" allowTypes = "/(\.|\/)(gif|jpe?g|png)$/" accept=".jpeg, .jpg, .png, .gif" auto="false"/>
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="אישור" action="#{showController.showDialogClosed}"
+                        update="manage-show-content" process="manage-show-content @this" />
+                    <p:commandButton value="ביטול" onclick= "PF('manageShowDialog').hide()" type="button" />
+                </f:facet>
+            </p:dialog>
+            
+            <p:confirmDialog widgetVar="deleteShowDialog" showEffect="fade" width="300"
+                message="האם למחוק את המתחם?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{showController.deleteShow}"
+                    process="@this" oncomplete="PF('deleteShowDialog').hide()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteShowDialog').hide()" />
+            </p:confirmDialog>
+            <p:confirmDialog widgetVar="deleteSelectedShowsDialog" showEffect="fade" width="300"
+                message="האם למחוק את המופעים?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{showController.deleteSelectedShows}"
+                    process="@this" oncomplete="PF('deleteSelectedShowsDialog').hide() PF('delete-shows-button').disable()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteSelectedShowsDialog').hide()" />
+            </p:confirmDialog>
+            
+        </h:form>
+    </h:body>
+</html>

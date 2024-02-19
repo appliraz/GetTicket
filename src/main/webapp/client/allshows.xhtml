@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"     
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions">
+    <h:head>
+        <title>דף הבית</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/showsStyles.css"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/client/header.xhtml"/>
+        <ui:include src="/client/navigationbar.xhtml"/>
+        <h:form id="form">
+            <p:dataScroller value = "#{showController.shows}" var="show" >
+                <div class="wrapper" >
+                    <div class="img">
+                        <p:graphicImage value = "#{imageHelper.img}" height="180" width="120">
+                            <f:param name="postername" value="#{show.showposter}"/>
+                        </p:graphicImage>
+                    </div>
+                    <div class="details">
+                        <h:outputText class="title" value="#{show.showtitle}"/>
+                        <br/>
+                        <h:outputText value="#{show.showtype}"/>
+                        <br/>
+                        <h:outputText value="#{show.showgenre}"/>
+                        <br/>
+                        <h:outputText value="#{show.showlength} דקות"/>
+                        <br/>
+                        <h:outputText class="producer" value="#{show.showproducer}"/>
+                    </div>
+                    <div class="info">
+                        <h:outputText value="#{of:abbreviate(show.showdescription, 200)}"/>   
+                    </div>
+                    <div class="rating">
+                        <p:rating value="#{show.showrating}" readonly="true"/>
+                    </div>
+                    <div class="button">
+                        <p:commandButton value="לעמוד המופע" action="#{homeController.showRedirect()}">
+                            <f:setPropertyActionListener value="#{show.showid}" target="#{homeController.showid}" />
+                        </p:commandButton>
+                    </div>
+                </div>
+                <br/>
+            </p:dataScroller>
+        </h:form>
+        <ui:include src="/client/footer.xhtml"/>
+    </h:body>
+</html>

@@ -1,0 +1,279 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+
+
+body {
+    background-color: #FAFAFA;
+}
+
+.miniheader{
+    width:100%;
+    display: flex;
+    margin-right: auto;
+    justify-items: flex-end;
+    
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-items: center;
+    font-family: Segoe UI, Arial;
+       
+}
+.panel {
+    
+    font-size: 1.4em;
+    padding: 20px;
+    width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0;
+    order: 1;
+
+}
+
+    .title{
+        margin: 0 50px 20px;
+        padding-top: 0px;
+        text-align: center;
+        font-size: 2em;
+        font-weight: bold;
+        color: midnightblue;
+        order:1;
+
+    }
+
+    .img{
+        width: 420px;
+        height: 500px;
+        order:2;
+    }
+
+    .rating {
+        display: flex;
+        order:3;
+        width: 140px;
+        align-items: center;
+        height: 400px;
+
+    }
+
+    .details {
+        align-content: center;
+        text-align: center;
+        padding-bottom: 10px;
+        border: thin dashed darkslategray;
+        width: 380px;
+        order: 4;   
+    }
+
+    .info{
+        order: 5;
+        width: 590px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    
+.noruns{    
+    font-family: inherit;
+    font-size: 1.2em;
+    margin-right: auto;
+    max-height: 30px;
+    order: 2;
+    width: 700px;
+}
+
+.scroller-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    height: 560px;
+    width: 1060px;
+    order: 3;
+    justify-items: center;
+}
+
+    .runscroll, .reviewscroll{
+        width: 1040px;
+        border: thin solid grey;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.28em;
+        overflow-y: scroll;
+        max-height: 420px;
+    }
+    
+    .run{
+        padding: 10px;
+        border: dotted darkslategray;
+        display: flex;
+        flex-wrap: wrap;
+        width: 960px;
+    }
+        
+        .location{
+            order:1;
+            flex-grow:1;
+        }
+        
+            .venue{
+                font-weight: bold;
+            }
+
+        .time{
+            order:2;
+            flex-grow:1;
+        }
+            .date{
+                font-weight: bold;
+            }
+
+        .price{
+            order: 3;
+            flex-grow:1;
+            font-weight: bold;
+            font-size: 1.1em;
+            align-self: center;
+        }
+        
+        .runinfo {
+            order: 4;
+            flex-grow:1;
+            width: 160px;
+            align-self: center;
+        }
+        
+        .button{
+            order:5;
+            flex-grow:1;
+            align-self: center;
+            justify-items: flex-end;
+                
+        }
+        
+        .run:hover{
+            background: #D8D8D8;
+        }
+        
+.noreviews{
+    justify-items: center;
+    font-family: inherit;
+    font-size: 1.2em;
+    margin-right: auto;
+    max-height: 30px;
+    width: 700px;
+    order: 4;
+    
+}
+
+.reviews {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    min-height: 100px;
+    max-height: 620px;
+    width: 1060px;
+    order: 5;
+    justify-items: center;
+    
+}
+
+.addreview {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    height: 600px;
+    width: 1060px;
+    order: 6;
+}
+
+.reviewbtn{
+    order: 1;
+    max-height: 100px;
+    
+}
+
+
+
+    
+.reviewinput{
+    order: 1;
+    font-family: inherit;
+    border: solid black;
+    width: 580px;
+}
+
+.ratinginput{
+    order: 2;
+    padding: 5px;
+    max-width: 190px;
+}
+
+.addbtn{
+    order:3;
+    max-width: 150px;
+}
+
+.ui-panel.ui-widget.ui-widget-content.ui-corner-all.reviewarea{
+    width: 940px;
+    max-height: 250px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-items: center;
+}
+
+.reviewarea{
+    display: flex;
+    flex-wrap: wrap;
+    align-items:center;
+    width: 940px;
+    max-height: 250px;
+}
+
+.ui-panel-content.ui-widget-content{
+    width:inherit;
+}
+
+
+
+.review{
+    display:flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    border: dashed lightslategray;
+}
+
+.writer{
+    order:1;
+    font-weight: bold;
+    flex-grow: 1;
+    max-width: 130px;
+}
+
+.content{
+    margin: 0 auto;
+    order: 2;
+    max-width: 450px;
+    max-height: 300px;
+    flex-grow: 5;
+}
+
+.reviewrating{
+    order: 3;
+    max-width: 180px;
+    margin-right: auto;
+    flex-grow: 2;
+}
+
+
+body .ui-rating .ui-rating-star-on a {
+    color: #FAB428;
+ }

@@ -1,0 +1,83 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+
+
+body {
+    background-color: #FAFAFA;
+}
+.ui-datascroller-content.ui-widget-content.ui-corner-all{
+    background-color: #FAFAFA;
+}
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    border: solid lightslategray;
+    font-size: 1.2em;
+    padding: 10px;
+    width: 65%;
+    margin: auto;
+    height: 210px;
+}
+.img {
+    margin-top: auto;
+    margin-bottom: auto;
+    order: 1;
+    flex-grow: 1;
+    max-width: 135px;
+}
+
+.details{
+    order: 2;
+    flex-grow: 2;
+    max-width: 250px;
+}
+
+
+    .producer {
+        font-size: 0.8em;
+
+    }
+
+
+    .title{
+        font-size: 1.1em;
+        font-weight: bold;
+
+
+    }
+
+.info {
+    order: 3;
+    flex-grow: 3;
+    max-width: 300px;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.details, .info, .rating, .button {
+    margin: auto 20px;
+}
+
+.rating{
+    max-width: 180px;
+    order: 4;
+    flex-grow: 2;
+}
+
+.button{
+    order: 5;
+    flex-grow: 1;
+}
+
+.wrapper:hover{
+    background: #D8D8D8;
+}
+
+
+
+
+body .ui-rating .ui-rating-star-on a {
+    color: #FAB428;
+ }

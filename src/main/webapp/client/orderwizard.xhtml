@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>ביצוע הזמנה</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <f:metadata>
+        <f:viewParam name="runId" value="#{orderController.runid}" />
+        <f:viewAction action="#{orderController.init}" />
+    </f:metadata>
+    <h:body>
+        <ui:include src="/client/header.xhtml"/>
+        <ui:include src="/client/navigationbar.xhtml"/>
+        <h:form id="menu">
+            <p:steps id="steps" activeIndex="#{orderController.menuTab}">  
+                <p:menuitem value="אישור פרטים" />  
+                <p:menuitem value="בחירת כרטיסים" />  
+                <p:menuitem value="תשלום" />  
+            </p:steps>
+        </h:form>
+        
+        <h:form id="confirm-form" rendered="#{orderController.currentTab==1}">          
+            <p:growl id="confirmmsgs" showDetail="true"/>
+            <p:graphicImage value = "#{imageHelper.img}" height="320" width="260">
+                <f:param name="postername" value="#{orderController.selectedRun.showid.showposter}"/>
+            </p:graphicImage>
+            <p:panelGrid columns="2">
+                <h:outputText value="שם המופע"/>
+                <h:outputText value="#{orderController.selectedRun.showid.showtitle}"/>
+
+                <h:outputText value="אורך המופע"/>
+                <h:outputText value="#{orderController.selectedRun.showid.showlength} דקות"/>
+
+                <h:outputText value="מתחם"/>
+                <h:outputText value="#{orderController.selectedRun.hallid.venueid.venuename}"/>
+
+                <h:outputText value="אולם"/>
+                <h:outputText value="#{orderController.selectedRun.hallid.hallname}"/>
+                
+                <h:outputText value="סוג האולם"/>
+                <h:outputText value="#{orderController.type}"/>
+
+                <h:outputText value="תאריך"/>
+                <h:outputText value="#{orderController.getDateFormat(orderController.selectedRun.rundate)}"/>
+
+                <h:outputText value="שעה"/>
+                <h:outputText value="#{orderController.getHourFormat(orderController.selectedRun.runhour)}"/>
+
+                <h:outputText value="מחיר כרטיס"/>
+                <h:outputText value="#{orderController.selectedRun.runprice} שח"/>
+
+                <h:outputText value="מידע מיוחד"/>
+                <h:outputText value="#{orderController.selectedRun.runinfo}"/>
+
+            </p:panelGrid>
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="התחרט וחזור" action="#{orderController.redirectHome()}" ajax="false"/>
+                    <p:commandButton value="אשר והמשך" action="#{orderController.nextTab()}" actionListener="#{orderController.initMapParameters()}" ajax="false">
+                        <p:ajax process="@this" update="mapform"/>
+                        <p:ajax update="menu"/>
+                        <p:ajax update="standing-form"/>
+                    </p:commandButton>
+                </p:toolbarGroup>    
+            </p:toolbar> 
+        </h:form>
+        
+        <h:form id="standing-form" rendered="#{orderController.currentTab==2 and orderController.type=='עמידה'}">
+            <p:growl id="standmsgs" showDetail="true"/>
+            <p:panel>
+                <h:outputText value=" יש #{orderController.availableAmount} כרטיסים פנויים"/>
+                 <br/> 
+                <h:outputText value="בחרו כמה כרטיסים תרצו"/>
+                <br/>
+                <br/>
+                <p:outputLabel for="seatsin" value="כמות "/>
+                <p:inputNumber id="seatsin" value="#{orderController.seatsAmount}" minValue="1" decimalPlaces="0" />
+                <br/>
+                <p:outputLabel for="selection" value="סך הכל נבחרו "/>
+                <h:outputText id="selection" value="#{orderController.selectList.size()}"/>
+            </p:panel>
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="הוסף כמות כרטיסים" actionListener="#{orderController.addUnmarkedToSelect}" ajax="false">
+                        <p:ajax process="@this" update="standing-form"/>
+                    </p:commandButton>
+                    <p:commandButton value="הסר כמות כרטיסים" actionListener="#{orderController.removeUnmarkedFromSelect}" ajax="false">
+                        <p:ajax process="@this" update="standing-form"/>
+                    </p:commandButton>
+                    <div style="width: 50px;"/>
+                    <p:commandButton value="התחרט וחזור" action="#{orderController.prevTab()}" ajax="false">
+                        <p:ajax process="@this" update="standing-form"/>
+                        <p:ajax update="confirm-form"/>
+                    </p:commandButton>  
+                    <p:commandButton value="אשר והמשך" action="#{orderController.nextTab()}" ajax="false">
+                        <p:ajax process="@this" update="standing-form"/>
+                        <p:ajax update="payment-form"/>
+                        <p:ajax update="menu"/>
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+        </h:form>
+        
+        <h:form id="mapform" rendered="#{orderController.mapReady and orderController.currentTab==2 and orderController.type=='ישיבה'}"
+                style="display: flex; flex-wrap: wrap;">
+            <p:growl id="mapmsgs" showDetail="true"/>
+            <div style="order:1; width:100%; min-height:200px; font-family: Segoe UI, Arial;">
+                <h1><h:outputText value="בחירת מושבים"/></h1>
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:commandButton value="zoom in" action="#{orderController.increaseScale()}" update="mapform"/>
+                        <p:commandButton value="zoom out" action="#{orderController.decreaseScale()}" update="mapform"/>
+                    </p:toolbarGroup>    
+                </p:toolbar> 
+            </div>
+            <div style="order:3;border: solid slategray; max-width: 100%; max-height:80%; transform: scaleX(#{orderController.scale}) scaleY(#{orderController.scale});" >
+                <p:outputPanel id="map" style="
+                               max-height: 80%;
+                               display: grid; 
+                               grid-template-columns: repeat(#{orderController.maxSeat}, 80px); 
+                               grid-template-rows: repeat(#{orderController.maxRow}, 80px); transform: scaleX(#{orderController.scale}) scaleY(#{orderController.scale});" >
+                    <ui:repeat value="#{orderController.mapList}" var="seat">  
+                        <p:panel id="placeholder" rendered="#{seat.runseatid=='0'}" styleClass="placeholder"/>
+                        <p:panel id="seat" rendered="#{seat.runseatid!='0'}"> 
+                            <h:outputStylesheet library="default" name="css/styles.css"/>
+                            <p:commandButton id="activeseat" value="#{seat.seatid.seatnumber}" disabled="#{seat.available =='false'}"
+                                                 styleClass="#{seat.available=='FALSE' ? 'disabled' : (orderController.isInSelectList(seat) ? 'selected' : 'enabled')}"
+                                                 actionListener="#{orderController.currentToSelectList(seat)}"
+                                                 update="@this mapform:selectlist"> 
+                            </p:commandButton>
+                        </p:panel>
+                    </ui:repeat>
+                </p:outputPanel>
+            </div>
+            <div style="order:4; width:100%;">
+                <p:toolbar>
+                    <p:toolbarGroup>    
+                        <p:commandButton value="התחרט וחזור" action="#{orderController.prevTab()}" ajax="false">
+                            <p:ajax process="@this" update="mapform"/>
+                            <p:ajax update="confirm-form"/>
+                        </p:commandButton>
+                        <p:commandButton value="אשר והמשך" action="#{orderController.nextTab()}" ajax="false">
+                            <p:ajax process="@this" update="mapform"/>
+                            <p:ajax update="payment-form"/>
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </div>
+            <div style="order:2; width:100%; margin-right: auto;">
+                <p:panel id="selectlist" >
+                    <div style="display: flex; flex-wrap: wrap; max-width: 750px; max-height:600px;">
+                        <ui:repeat value="#{orderController.selectList}" rendered="#{orderController.hasSelected()}" var="select">
+                            <div style="border: solid slategray; width: 120px; height: 100px;" >
+                                <h:outputText value="שורה: #{select.seatid.seatrow}  " style="font-size: 22px; max-width:100px;"/>
+                                <br/>
+                                <h:outputText value="מושב: #{select.seatid.seatnumber}" style="font-size: 22px; max-width:100px"/>
+                                <br/>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </p:panel>
+            </div>
+        </h:form>
+        
+
+        
+        <h:form id="payment-form" rendered="#{orderController.currentTab==3}" prependId="false" >
+            <p:growl id="paymentmsgs" showDetail="true"/>
+            <p:panelGrid columns="2">
+                
+                <h:outputText value="שם המופע "/>
+                <h:outputText value="#{orderController.selectedRun.showid.showtitle}"/>
+                
+                <h:outputText value="תאריך "/>
+                <h:outputText value="#{orderController.getDateFormat(orderController.selectedRun.rundate)}"/>
+                
+                <h:outputText value="מתחם "/>
+                <h:outputText value="#{orderController.selectedRun.hallid.venueid.venuename}"/>
+                
+                <h:outputText value="כמות כרטיסים "/>
+                <h:outputText value="#{orderController.selectList.size()}"/>
+                
+                <h:outputText value="מחיר לכרטיס "/>
+                <h:outputText value="#{orderController.selectedRun.runprice} שח"/>
+                
+                <h:outputText value="סכום לתשלום "/>
+                <h:outputText value="#{orderController.sumToPay} שח"/>
+                
+            </p:panelGrid>
+            <p:panelGrid id="sittingdetails" columns="2" rendered="#{orderController.type=='ישיבה'}">
+                
+                <f:facet name="header">
+                    <h:outputText value="שורה  "/>
+                    <h:outputText value="מושב  "/>
+                </f:facet>
+                
+                <c:forEach items="#{orderController.selectList}" var="select">
+                    <h:outputText value="#{select.seatid.seatrow}"/>
+                    
+                    <h:outputText value="#{select.seatid.seatnumber}"/>
+                </c:forEach>
+                    
+            </p:panelGrid>
+            <p:panelGrid id="pnlCreditCard" columns="4" style="direction: ltr;">
+                <f:facet name="header">
+                    <pe:creditCard id="creditCard" labelMonthYear="MM/YY" placeholderExpiry="**/**" placeholderName="ישראל ישראלי"/>
+                </f:facet>
+                <p:inputText id="number" placeholder="מספר כרטיס" inputmode="numeric"/>
+                <p:inputText id="name" placeholder="שם בעל הכרטיס"/>
+                <p:outputPanel id="expiration">
+                    <p:datePicker id="month" widgetVar="monthPicker" view="month" pattern="MM/yy" yearNavigator="true" yearRange="2022:2050"
+                                  placeholder="MM/YY"
+                                  onchange="$('#expiry').val(PF('monthPicker').input.val()); $('#expiry')[0].dispatchEvent(new Event('change'));"/>
+                    <!-- Hide Expiration field so we can use PF MonthPicker -->
+                    <p:inputText id="expiry" placeholder="MM/YY" inputmode="numeric" style="display:none"/>
+                </p:outputPanel>
+                <p:inputText id="cvc" placeholder="CVC" inputmode="numeric"/>
+            </p:panelGrid>
+            <p:commandButton value="התחרט וחזור" action="#{orderController.prevTab()}" ajax="false">
+                <p:ajax process="@this" update="mapform"/>
+                <p:ajax update="confirm-form"/>
+            </p:commandButton>
+            <p:commandButton value="שלם וסיים" action="#{orderController.processPayment()}" process="@this">
+            </p:commandButton>
+        </h:form>
+        <ui:include src="/client/footer.xhtml"/>
+    </h:body>
+</html>

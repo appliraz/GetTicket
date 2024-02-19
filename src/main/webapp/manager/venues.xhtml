@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>ניהול מתחמים</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="חדש" actionListener="#{venueController.newVenue}" style="background-color: green; color: white;"
+                                     update =":dialogs:manage-venue-content" oncomplete="PF('manageVenueDialog').show()">
+                        <p:resetInput target=":dialogs:manage-venue-content" />
+                    </p:commandButton>
+                    <p:commandButton id="delete-venues-button" value="מחק מתחמים"
+                        style="background-color: red; color:white;" 
+                        disabled="#{!venueController.hasSelectedVenues()}" update="@this" 
+                        oncomplete="PF('deleteSelectedVenuesDialog').show()">   
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+             <!--output table-->
+            <p:dataTable id="dt-venues" widgetVar="dtVenues" var="venue" value="#{venueController.venues}" selectionMode = "multiple" selection="#{venueController.selectedVenues}"
+                         reflow = "true" rowKey="#{venue.venueid}" scrollable ="true" rowSelectMode ="add">
+                <f:facet name="header">
+                    <div class="venues-table-header">
+                        <span style="font-weight: bold">מתחמים</span> 
+                        <span
+                            class="filter-container ui-input-icon-left"> 
+                            <i class="pi pi-search"></i> 
+                            <p:inputText id="globalFilter" onkeyup="PF('dtVenues').filter()" placeholder="חפש מתחם" />
+                        </span>
+
+                    </div>
+                </f:facet>
+                <p:ajax event="rowSelect" update=":form:delete-venues-button" />
+                <p:ajax event="rowUnselect" update=":form:delete-venues-button" />
+                <p:ajax event="rowSelectCheckbox" update=":form:delete-venues-button" />
+                <p:ajax event="rowUnselectCheckbox" update=":form:delete-venues-button" />
+                <p:ajax event="toggleSelect" update=":form:delete-venues-button" />     
+                <p:column headerText="מזהה" sortBy="#{venue.venueid}" filterBy="#{venue.venueid}">
+                    <h:outputText value="#{venue.venueid}" />
+                </p:column>
+                <p:column headerText="שם" sortBy="#{venue.venuename}" filterBy="#{venue.venuename}">
+                    <h:outputText value="#{venue.venuename}" />
+                </p:column>
+                <p:column headerText="כתובת" sortBy="#{venue.venueaddress}" filterBy="#{venue.venueaddress}">
+                    <h:outputText value="#{venue.venueaddress}" />
+                </p:column>
+                <p:column headerText="תכולה" sortBy="#{venue.venuecapacity}" filterBy="#{venue.venuecapacity}">
+                    <h:outputText value="#{venue.venuecapacity}" />
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandButton value = "עריכה" update=":dialogs:manage-venue-content" 
+                                     oncomplete="PF('manageVenueDialog').show()" process="@this" style="background-color: yellowgreen; color: darkslategray;" >
+                        <f:setPropertyActionListener value="#{venue}" target="#{venueController.selectedVenue}" />
+                        <p:resetInput target=":dialogs:manage-venue-content" />
+                    </p:commandButton>
+                    <p:commandButton value="מחיקה" process="@this" oncomplete="PF('deleteVenueDialog').show()" style="background-color: red; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{venue}" target="#{venueController.selectedVenue}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+        </h:form>
+        
+        <h:form id="dialogs">
+            <p:dialog header="Venue Details" showEffect="fade" modal="true" widgetVar="manageVenueDialog"
+                responsive="true">
+                <p:outputPanel id="manage-venue-content" >
+                    <p:outputPanel rendered="#{not empty venueController.selectedVenue}">
+                        <div class="field">
+                            <p:outputLabel for="name">שם</p:outputLabel>
+                            <p:inputText id="name" value="#{venueController.selectedVenue.venuename}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="address">כתובת</p:outputLabel>
+                            <p:inputText id="address" value="#{venueController.selectedVenue.venueaddress}" required="true"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="capacity">תכולה</p:outputLabel>
+                            <p:inputText id="capacity" value="#{venueController.selectedVenue.venuecapacity}" required="true" />
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="אישור" actionListener="#{venueController.venueDialogClosed}"
+                        update="manage-venue-content" process="manage-venue-content @this" />
+                    <p:commandButton value="ביטול" onclick= "PF('manageVenueDialog').hide()" type="button" />
+                </f:facet>
+            </p:dialog>
+            
+            <p:confirmDialog widgetVar="deleteVenueDialog" showEffect="fade" width="300"
+                message="האם למחוק את המתחם?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{venueController.deleteVenue}"
+                    process="@this" oncomplete="PF('deleteVenueDialog').hide()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteVenueDialog').hide()" />
+            </p:confirmDialog>
+            <p:confirmDialog widgetVar="deleteSelectedVenuesDialog" showEffect="fade" width="300"
+                message="האם למחוק את המתחמים?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{venueController.deleteSelectedVenues}"
+                    process="@this" oncomplete="PF('deleteSelectedVenuesDialog').hide() PF('delete-venues-button').disable()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteSelectedVenuesDialog').hide()" />
+            </p:confirmDialog>
+            
+        </h:form>
+    </h:body>
+</html>

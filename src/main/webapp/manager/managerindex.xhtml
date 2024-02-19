@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>עמוד ראשי הנהלה</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form>
+            <div id="wrapper">
+                <p:dataTable id="paymentdt" value="#{paymentController.payments}" var="payment" rowKey="#{payment.paymentid}">
+                    <p:column headerText="מספר תשלום" sortBy="#{payment.paymentid}" filterBy="#{payment.paymentid}">
+                        <h:outputText value="#{payment.paymentid}" />
+                    </p:column>
+                    <p:column headerText="תאריך" sortBy="#{payment.paymentdate}" filterBy="#{payment.paymentdate}">
+                        <h:outputText value="#{paymentController.getDateFormat(payment.paymentdate)}" />
+                    </p:column>
+                    <p:column headerText="מספר הזמנה" sortBy="#{payment.orderid.orderid}" filterBy="#{payment.orderid.orderid}">
+                        <h:outputText value="#{payment.orderid.orderid}" />
+                    </p:column>
+                    <p:column headerText="שם הלקוח" sortBy="#{payment.orderid.clientid.clientfirstname}" filterBy="#{payment.orderid.clientid.clientfirstname}">
+                        <h:outputText value="#{payment.orderid.clientid.clientfirstname}" />
+                    </p:column>
+                    <p:column headerText="כמות כרטיסים" sortBy="#{payment.orderid.selectionList.size()}" filterBy="#{payment.orderid.selectionList.size()}">
+                        <h:outputText value="#{payment.orderid.selectionList.size()}" />
+                    </p:column>
+                    <p:column headerText="מופע" sortBy="#{payment.orderid.run.showid.showtitle}" filterBy="#{payment.orderid.run.showid.showtitle}">
+                        <h:outputText value="#{payment.orderid.run.showid.showtitle}" />
+                    </p:column>
+                    <p:column headerText="סכום העסקה" sortBy="#{payment.total}" filterBy="#{payment.total}">
+                        <h:outputText value="#{payment.total}" />
+                    </p:column>
+                    <p:column headerText="עסקה הושלמה" sortBy="#{payment.paymentcomplete}" filterBy="#{payment.paymentcomplete}">
+                        <h:outputText value="#{payment.paymentcomplete}" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </h:body>
+</html>

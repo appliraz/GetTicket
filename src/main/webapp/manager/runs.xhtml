@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions" >      
+    <h:head>
+        <title> ניהול מופעים רצים</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <script> <!--to use calender with hebrew names -->
+            PrimeFaces.locales['es'] = {
+                monthNames: ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'],
+                monthNamesShort: ['ינ', 'פב', 'מרץ', 'אפר', 'מאי', 'יוני', 'יולי', 'אוג', 'ספט', 'אוק', 'נוב', 'דצ'],
+                dayNames: ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'],
+                dayNamesShort: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
+                dayNamesMin: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
+                weekHeader: 'שבוע',
+                firstDay: 0,
+                isRTL: true,
+                month: 'חודש',
+                week: 'שבוע',
+                day: 'יום',
+                today: 'היום',
+                clear: 'נקה'
+            };
+        </script>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            
+            <!--*****\\upper toolbar //*****-->
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="חדש" actionListener="#{runController.newRun}" style="background-color: green; color: white;"
+                                     update =":dialogs:manage-run-content" oncomplete="PF('manageRunDialog').show()">
+                        <p:resetInput target=":dialogs:manage-run-content" />
+                    </p:commandButton>
+                    <p:commandButton id="delete-runs-button" value="מחק מופעים"
+                        style="background-color: red; color:white;" 
+                        disabled="#{!runController.hasSelectedRuns()}" update="@this" 
+                        oncomplete="PF('deleteSelectedRunsDialog').show()">                      
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+            
+             <!--output table-->
+            <p:dataTable id="dt-runs" widgetVar="dtRuns" var="run" value="#{runController.runs}" selectionMode = "multiple" selection="#{runController.selectedRuns}"
+                         reflow = "true" rowKey="#{run.runid}" scrollable ="true" rowSelectMode ="add">
+                <f:facet name="header">
+                    <div class="runs-table-header">
+                        <span class="filter-container ui-input-icon-left"> 
+                            <i class="pi pi-search"></i> 
+                            <p:inputText id="globalFilter" onkeyup="PF('dtRuns').filter()" placeholder="חיפוש" />
+                        </span>
+                    </div>
+                </f:facet>
+                <p:ajax event="rowSelect" update=":form:delete-runs-button" />
+                <p:ajax event="rowUnselect" update=":form:delete-runs-button" />
+                <p:ajax event="rowSelectCheckbox" update=":form:delete-runs-button" />
+                <p:ajax event="rowUnselectCheckbox" update=":form:delete-runs-button" />
+                <p:ajax event="toggleSelect" update=":form:delete-runs-button" />     
+                <p:column headerText="מזהה" sortBy="#{run.runid}" filterBy="#{run.runid}">
+                    <h:outputText value="#{run.runid}" />
+                </p:column>
+                <p:column headerText="שם המופע" sortBy="#{run.showid.showtitle}" filterBy="#{run.showid.showtitle}">
+                    <h:outputText value="#{run.showid.showtitle}" />
+                </p:column>
+                <p:column headerText="שם המתחם" sortBy="#{run.hallid.venueid.venuename}" filterBy="#{run.hallid.venueid.venuename}">
+                    <h:outputText value="#{run.hallid.venueid.venuename}" />
+                </p:column>
+                <p:column headerText="שם האולם" sortBy="#{run.hallid.hallname}" filterBy="#{run.hallid.hallname}">
+                    <h:outputText value="#{run.hallid.hallname}" />
+                </p:column>
+                <p:column headerText="תאריך" sortBy="#{run.rundate}" filterBy="#{run.rundate}">
+                    <h:outputText value="#{run.rundate}" converter="dateConverter" />
+                </p:column>
+                <p:column headerText="שעה" sortBy="#{run.runhour}" filterBy="#{run.runhour}">
+                    <h:outputText value="#{run.runhour}" converter="timeConverter" />
+                </p:column>
+                <p:column headerText="מחיר כרטיס" sortBy="#{run.runprice}">
+                    <h:outputText value="#{run.runprice}" />
+                </p:column>
+                <p:column headerText="הערות מיוחדות" sortBy="#{run.runinfo}">
+                    <h:outputText value="#{of:abbreviate(run.runinfo, 110)}"/>
+                </p:column>
+                <p:column field="active" headerText="פעיל" sortBy="#{run.active}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('dtRuns').filter()" styleClass="custom-filter">
+                            <f:selectItem itemLabel="All" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItem itemLabel="כן" itemValue="true" />
+                            <f:selectItem itemLabel="לא" itemValue="false" />
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{run.active}" />
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandButton value = "עריכה" update=":dialogs:manage-run-content"
+                        oncomplete="PF('manageRunDialog').show()"
+                        process="@this" style="background-color: yellowgreen; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{run}" target="#{runController.selectedRun}" />
+                        <p:resetInput target=":dialogs:manage-run-content" />
+                    </p:commandButton>
+                    <p:commandButton value="מחיקה" process="@this" oncomplete="PF('deleteRunDialog').show()" style="background-color: red; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{run}" target="#{runController.selectedRun}" />
+                    </p:commandButton>
+                    <p:commandButton value="צור כרטיסים" process="@this" style="background-color: silver; color: black;" action="#{runController.makeActive()}">
+                        <f:setPropertyActionListener value="#{run}" target="#{runController.selectedRun}" />
+                    </p:commandButton>                   
+                    <p:commandButton value="שנה סטטוס פעילות" process="@this" style="background-color: tomato; color: black;" action="#{runController.changeActivityStatus()}">
+                        <f:setPropertyActionListener value="#{run}" target="#{runController.selectedRun}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="dialogs">
+            <!--input/edit dialog-->
+            <p:dialog header="Run Details" showEffect="fade" modal="true" widgetVar="manageRunDialog"
+                responsive="true">
+                <p:outputPanel id="manage-run-content" >
+                    <p:outputPanel rendered="#{not empty runController.selectedRun}">
+                        <div class="field">
+                            <p:outputLabel for="show">מופע</p:outputLabel>
+                            <p:selectOneMenu id="show" value="#{runController.selectedRun.showid}" converter="showConverter">
+                                <f:selectItems value="#{showSelector.shows}" var="showitem" 
+                                               itemLabel="#{showitem.showtitle}" itemValue="#{showitem.showid.toString()}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="hall">אולם</p:outputLabel>
+                            <p:selectOneMenu id="hall" value="#{runController.selectedRun.hallid}" converter="hallConverter">
+                                <f:selectItems value="#{hallSelector.halls}" var="hallitem" 
+                                               itemLabel="#{hallitem.toString()}" itemValue="#{hallitem.hallid.toString()}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="date">תאריך</p:outputLabel>
+                            <p:datePicker id="date" dir="RTL" value="#{runController.selectedRun.rundate}" showTime="false" mindate="#{runController.mindate}" locale="es" required="true"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="hour">שעה</p:outputLabel>
+                            <pe:timePicker id="hour" dir="RTL" value="#{runController.selectedRun.runhour}" mode="popup" label="שעה"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="price">מחיר כרטיס</p:outputLabel>
+                            <p:inputText id="price" value="#{runController.selectedRun.runprice}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="info">הערות מיוחדות</p:outputLabel>
+                            <p:inputTextarea id="info" value="#{runController.selectedRun.runinfo}" required="false" autoResize="false" cols="40" rows="10" />
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="אישור" action="#{runController.runDialogClosed}"
+                        update="manage-run-content" process="manage-run-content @this" />
+                    <p:commandButton value="ביטול" onclick= "PF('manageRunDialog').hide()" type="button" />
+                </f:facet>
+            </p:dialog>
+            
+            <p:confirmDialog widgetVar="deleteRunDialog" showEffect="fade" width="300"
+                message="האם למחוק את ההרצה?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{runController.deleteRun}"
+                    process="@this" oncomplete="PF('deleteRunDialog').hide()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteRunDialog').hide()" />
+            </p:confirmDialog>
+            <p:confirmDialog widgetVar="deleteSelectedRunsDialog" showEffect="fade" width="300"
+                message="האם למחוק את המופעים?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{runController.deleteSelectedRuns}"
+                    process="@this" oncomplete="PF('deleteSelectedRunsDialog').hide() PF('delete-runs-button').disable()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteSelectedRunsDialog').hide()" />
+            </p:confirmDialog>          
+        </h:form>
+    </h:body>
+</html>

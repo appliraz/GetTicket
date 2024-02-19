@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>ניהול לקוחות</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/managerStyles.css"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="חדש" actionListener="#{clientController.newClient}" style="background-color: green; color: white;"
+                                     update =":dialogs:manage-client-content" oncomplete="PF('manageClientDialog').show()">
+                        <p:resetInput target=":dialogs:manage-client-content" />
+                    </p:commandButton>
+                    <p:commandButton id="delete-clients-button" value="מחק לקוחות"
+                        style="background-color: red; color:white;" 
+                        disabled="#{!clientController.hasSelectedClients()}" update="@this" 
+                        oncomplete="PF('deleteSelectedClientsDialog').show()">                      
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+             <!--output table-->
+            <p:dataTable id="dt-clients" widgetVar="dtClients" var="client" value="#{clientController.clients}" selectionMode = "multiple" selection="#{clientController.selectedClients}"
+                         reflow = "true" rowKey="#{client.clientid}" scrollable ="true" rowSelectMode ="add">
+                <f:facet name="header">
+                    <div class="clients-table-header">
+                        <span style="font-weight: bold">לקוחות</span> 
+                        <span
+                            class="filter-container ui-input-icon-left"> 
+                            <i class="pi pi-search"></i> 
+                            <p:inputText id="globalFilter" onkeyup="PF('dtClients').filter()" placeholder="חפש מתחם" />
+                        </span>
+
+                    </div>
+                </f:facet>
+                <p:ajax event="rowSelect" update=":form:delete-clients-button" />
+                <p:ajax event="rowUnselect" update=":form:delete-clients-button" />
+                <p:ajax event="rowSelectCheckbox" update=":form:delete-clients-button" />
+                <p:ajax event="rowUnselectCheckbox" update=":form:delete-clients-button" />
+                <p:ajax event="toggleSelect" update=":form:delete-clients-button" />     
+                <p:column headerText="מזהה" sortBy="#{client.clientid}" filterBy="#{client.clientid}">
+                    <h:outputText value="#{client.clientid}" />
+                </p:column>
+                <p:column headerText="שם" sortBy="#{client.clientfirstname}" filterBy="#{client.clientfirstname}">
+                    <h:outputText value="#{client.clientfirstname}" />
+                </p:column>
+                <p:column headerText="טלפון" sortBy="#{client.clientphone}" filterBy="#{client.clientphone}">
+                    <h:outputText value="#{client.clientphone}" />
+                </p:column>
+                <p:column headerText="email" sortBy="#{client.clientemail}" filterBy="#{client.clientemail}">
+                    <h:outputText value="#{client.clientemail}" />
+                </p:column>
+                <p:column headerText="סיסמה" sortBy="#{client.clientpassword}" filterBy="#{client.clientpassword}">
+                    <h:outputText value="#{client.clientpassword}" />
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandButton value = "עריכה" update=":dialogs:manage-client-content"
+                        oncomplete="PF('manageClientDialog').show()"
+                        process="@this" style="background-color: yellowgreen; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{client}" target="#{clientController.selectedClient}" />
+                        <p:resetInput target=":dialogs:manage-client-content" />
+                    </p:commandButton>
+                    <p:commandButton value="מחיקה" process="@this" oncomplete="PF('deleteClientDialog').show()" style="background-color: red; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{client}" target="#{clientController.selectedClient}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+        </h:form>
+        
+        <h:form id="dialogs">
+            <p:dialog header="Client Details" showEffect="fade" modal="true" widgetVar="manageClientDialog"
+                responsive="true">
+                <p:outputPanel id="manage-client-content" >
+                    <p:outputPanel rendered="#{not empty clientController.selectedClient}">
+                        <div class="field">
+                            <p:outputLabel for="name">שם</p:outputLabel>
+                            <p:inputText id="name" value="#{clientController.selectedClient.clientfirstname}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="phone">טלפון</p:outputLabel>
+                            <p:inputText id="phone" value="#{clientController.selectedClient.clientphone}" required="true"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="email">email</p:outputLabel>
+                            <p:inputText id="email" value="#{clientController.selectedClient.clientemail}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="password">סיסמה</p:outputLabel>
+                            <p:inputText id="password" value="#{clientController.selectedClient.clientpassword}" required="false" />
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="אישור" actionListener="#{clientController.clientDialogClosed}"
+                        update="manage-client-content" process="manage-client-content @this" />
+                    <p:commandButton value="ביטול" onclick= "PF('manageClientDialog').hide()" type="button" />
+                </f:facet>
+            </p:dialog>
+            
+            <p:confirmDialog widgetVar="deleteClientDialog" showEffect="fade" width="300"
+                message="האם למחוק את הלקוח?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{clientController.deleteClient}"
+                    process="@this" oncomplete="PF('deleteClientDialog').hide()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteClientDialog').hide()" />
+            </p:confirmDialog>
+            <p:confirmDialog widgetVar="deleteSelectedClientsDialog" showEffect="fade" width="300"
+                message="האם למחוק את הלקוחות?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{clientController.deleteSelectedClients}"
+                    process="@this" oncomplete="PF('deleteSelectedClientsDialog').hide() PF('delete-clients-button').disable()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteSelectedClientsDialog').hide()" />
+            </p:confirmDialog>
+            
+        </h:form>
+    </h:body>
+</html>

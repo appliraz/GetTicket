@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"     
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>דף הבית</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/homeStyles.css"/>
+    </h:head>
+    <f:metadata>
+        <f:viewAction action="#{randomController.init()}"/>
+    </f:metadata>
+    <h:body>
+        <ui:include src="/client/header.xhtml"/>
+        <ui:include src="/client/navigationbar.xhtml"/>
+        <h:form id="randomform">
+            <div class="random">
+                <div class="img">
+                    <p:commandLink action="#{randomController.redirectShowPage()}">
+                        <o:graphicImage value ="#{fileUploadController.getImg(randomController.show.showposter)}" height="460" width="380" style="border: solid thin darkslategrey; box-shadow: darkgrey 1px 4px 11px 6px;"/>
+                    </p:commandLink>
+                </div>
+                <div class="details">
+                    <h:outputText value=" #{randomController.show.showtitle}"/>
+                    <br/>
+                    <h:outputText value=" #{randomController.show.showtype} "/>
+                    <h:outputText value=" #{randomController.show.showgenre}" />
+                </div>
+                <div class="randombtn">
+                    <p:commandButton value="הגרל לי מופע" action="#{randomController.rollRandomShow()}" update="randomform"/>
+                </div>
+                <div class="showbtn">
+                    <p:commandButton value="לעמוד המופע" action="#{homeController.showRedirect()}">
+                        <f:setPropertyActionListener value="#{randomController.show.showid}" target="#{homeController.showid}" />
+                    </p:commandButton>
+                </div>
+            </div>   
+        </h:form>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            <div class="wrapper">
+                <div class="func">
+                    <h:outputText value=" public Fun " class="h1"/>
+                    <div class="logo">
+                        <p:graphicImage name="default/img/getTicketLogo.svg" height="90" width="180"/>
+                    </div> 
+                </div>
+                <div class="sticker">
+                    <h:outputText value=" סרטים | הצגות | קונצרטים " class="h2"/>
+                </div>
+                <div class="panel">
+                    <p:panel>
+                        <!--SELECT WITH FILTER-->
+                        <div class="quickordertext">  
+                            <h:outputText value="להזמנת כרטיסים מהירה"/>
+                        </div>
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <div class="bargroup">
+                                    <div class="bar-first">
+                                        <p:selectOneMenu id="filter-type" value="#{homeController.selectedType}" label="סוג">
+                                            <p:ajax event="itemSelect" update="@this form:filter-venue filter-show"/>
+                                            <f:selectItem itemLabel="סוג" noSelectionOption="true"/>
+                                            <f:selectItem itemLabel="סרט" itemValue="סרט"/>
+                                            <f:selectItem itemLabel="קונצרט" itemValue="קונצרט"/>
+                                            <f:selectItem itemLabel="הצגה" itemValue="הצגה"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="bar">
+                                        <p:selectOneMenu id="filter-venue" value="#{homeController.selectedVenue}" converter="venueSelectConverter">
+                                            <p:ajax event="itemSelect" update="filter-show filter-date"/>
+                                            <f:selectItem itemLabel="מקום" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{homeController.venuesSelectList}" var="venueitem" 
+                                                       itemLabel="#{venueitem.venuename}" itemValue="#{venueitem}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="bar">
+                                        <p:selectOneMenu id="filter-show" value="#{homeController.selectedShow}" converter="showSelectConverter">
+                                            <p:ajax event="itemSelect" update="filter-date"/>
+                                            <f:selectItem itemLabel="מופע" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{homeController.showsSelectList}" var="showitem" 
+                                                       itemLabel="#{showitem.showtitle}" itemValue="#{showitem}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="bar">
+                                        <p:selectOneMenu id="filter-date" value="#{homeController.selectedDate}" converter="dateConverter">
+                                            <p:ajax event="itemSelect" update="filterbtn"/>
+                                            <f:selectItem itemLabel="תאריך" noSelectionOption="true"/>
+                                            <f:selectItems value="#{homeController.datesSelectList}" var="dateitem" 
+                                                           itemLabel="#{homeController.getDateFormat(dateitem)}" itemValue="#{dateitem}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="bar">
+                                        <p:commandButton id="filterbtn" value="הצג אפשרויות" process="form" disabled="#{!homeController.filterReady}"
+                                                         action="#{homeController.requestFilter()}" update="form">
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:panel>
+                </div>
+                <div class="options">
+                    <p:dataScroller id="runlist" widgetVar="runList" value="#{homeController.runs}" var="run" chunkSize="5" rendered="#{homeController.filterRequested}">
+                        <f:facet name="header">אפשרויות לפי הסינון הנבחר</f:facet>
+                        <div class="option">
+                            <div class="run">
+                                <div class="runhall">
+                                    <h:outputText value=" #{run.hallid.hallname} "/>      
+                                </div>
+                                <div class="runhour">
+                                    <h:outputText value=" #{homeController.getHourFormat(run.runhour)} "/>
+                                </div>
+                                <div class="runprice">
+                                    <h:outputText value=" #{run.runprice} שח "/>
+                                </div>
+                            </div>
+                            <div class="orderdirect">
+                                <p:commandButton id="orderbtn" value="הזמן כרטיסים" process="@this" action="#{homeController.orderRedirect()}">
+                                    <f:setPropertyActionListener value="#{run}" target="#{homeController.selectedRun}" />
+                                </p:commandButton>
+                            </div>
+                    </div>
+                    </p:dataScroller> 
+                </div>
+            </div>
+        </h:form>
+        <ui:include src="/client/footer.xhtml"/>
+    </h:body>
+</html>

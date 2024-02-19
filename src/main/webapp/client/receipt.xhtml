@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"     
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>עמוד מופע</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet library="default" name="css/receiptStyles.css"/>
+    </h:head>
+
+    <h:body>
+            <h:form id="form">
+                <div class="wrapper">
+                    <div class="logo">  
+                        <p:commandLink action="/client/clientindex.xhtml?faces-redirect=true">
+                            <p:graphicImage name="default/img/getTicketLogo.svg" height="70" width="160"/>
+                        </p:commandLink>
+                    </div>
+                    <div class="message">
+                        <h:outputText value=" כל הכבוד!! השלמתם את ההזמנה! " class="headline"/>
+                    </div>
+                    <div class="showdetails">
+                        <div class="showname"> 
+                            <h:outputText value="#{confirmController.run.showid.showtitle}"/>
+                        </div>
+                        <div clas="showimg">
+                            <o:graphicImage value="#{fileUploadController.getImg(confirmController.run.showid.showposter)}" height="360px" width="220px" styleClass="showimg"/>
+                        </div>
+                    </div>
+                    <div class= "details">
+                        <div class="clientdetails">
+                            <h:outputText value="עבור #{confirmController.client.clientfirstname}"/>
+                            <h:outputText value=" טלפון #{confirmController.client.clientphone}"/>
+                        </div> 
+                        <div class="rundetails">
+                            <h:outputText value=" איפה?  #{confirmController.run.hallid.venueid.venuename} "/>
+                            <h:outputText value="מתי? "/>
+                            <h:outputText value=" #{confirmController.getDateFormat(confirmController.run.rundate)} "/>
+                            <h:outputText value= " מתי בדיוק? "/>
+                            <h:outputText value= " #{confirmController.getHourFormat(confirmController.run.runhour)} "/>
+                        </div>
+                        <div class="orderdetails">
+                            <h:outputText value=" כמות כרטיסים #{confirmController.selectedSeats.size()}"/>
+                            <h:outputText value=" מחיר לכרטיס #{confirmController.run.runprice} שח"/>
+                            <h:outputText value=" סך הכל שולם #{confirmController.payment.total} שח"/>
+                        </div>
+                    </div>
+                    <div class="filler"/>
+                    <div class="tickets">
+                        <ui:repeat value="#{confirmController.selectedSeats}" var="seat">
+                            <div class="ticket">
+                                <div class="showticket">
+                                    <h:outputText value="#{confirmController.run.showid.showtitle}"/>
+                                </div>
+                                <div class="venueticket">
+                                    <h:outputText value=" #{confirmController.run.hallid.venueid.venuename} "/>
+                                    <h:outputText value=" #{confirmController.run.hallid.hallname} "/>
+                                </div>
+                                <div class="runticket">
+                                    <h:outputText value=" #{confirmController.getDateFormat(confirmController.run.rundate)}"/>
+                                    <h:outputText value=" #{confirmController.getHourFormat(confirmController.run.runhour)} "/>
+                                    <h:outputText value=" #{confirmController.run.runprice} שח"/>
+                                </div>
+                                <div class="sitting">
+                                    <h:outputText value="שורה:  #{seat.seatid.seatrow} " rendered="#{confirmController.sitting}"/>
+                                    <h:outputText value=" מושב: #{seat.seatid.seatnumber} " rendered="#{confirmController.sitting}"/>
+                                </div>
+                                <div class="standing">
+                                    <h:outputText value="כרטיס לא מסומן למופע עמידה" rendered="#{!confirmController.sitting}"/>
+                                </div>
+                                <div class="comments">
+                                    <h:outputText value="#{confirmController.details}"/>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+           
+                </div>    
+            </h:form>
+    </h:body>
+</html>

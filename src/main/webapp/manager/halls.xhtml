@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit this template
+-->
+<!DOCTYPE html>
+<html dir="rtl"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>ניהול אולמות</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </h:head>
+    <h:body>
+        <ui:include src="/manager/header.xhtml"/>
+        <ui:include src="/manager/navigationbar.xhtml"/>
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            <!--\\toolbar on the datatable//-->
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="חדש" actionListener="#{hallController.newHall}" style="background-color: green; color: white;"
+                                     update =":dialogs:manage-hall-content" oncomplete="PF('manageHallDialog').show()">
+                        <p:resetInput target=":dialogs:manage-hall-content" />
+                    </p:commandButton>
+                    <p:commandButton id="delete-halls-button" value="מחק אולמות"
+                        style="background-color: red; color:white;" 
+                        disabled="#{!hallController.hasSelectedHalls()}" update="@this" 
+                        oncomplete="PF('deleteSelectedHallsDialog').show()"/>                      
+                </p:toolbarGroup>
+            </p:toolbar>
+             <!--\\datatable//-->
+            <p:dataTable id="dt-halls" widgetVar="dtHalls" var="hall" value="#{hallController.halls}" selectionMode = "multiple" selection="#{hallController.selectedHalls}"
+                         reflow = "true" rowKey="#{hall.hallid}" scrollable ="true" rowSelectMode ="add">
+                <f:facet name="header">
+                    <div class="halls-table-header">
+                        <p:inputText id="globalFilter" onkeyup="PF('dtHalls').filter()" placeholder="חפש מתחם" />
+                    </div>
+                </f:facet>
+                <p:ajax event="rowSelect" update=":form:delete-halls-button" />
+                <p:ajax event="rowUnselect" update=":form:delete-halls-button" />
+                <p:ajax event="rowSelectCheckbox" update=":form:delete-halls-button" />
+                <p:ajax event="rowUnselectCheckbox" update=":form:delete-halls-button" />
+                <p:ajax event="toggleSelect" update=":form:delete-halls-button" />     
+                <p:column headerText="מזהה" sortBy="#{hall.hallid}" filterBy="#{hall.hallid}">
+                    <h:outputText value="#{hall.hallid}" />
+                </p:column>
+                <p:column headerText="מתחם" sortBy="#{hall.venueid.venuename}" filterBy="#{hall.venueid.venuename}">
+                    <h:outputText value="#{hall.venueid.venuename}" />
+                </p:column>
+                <p:column headerText="שם" sortBy="#{hall.hallname}" filterBy="#{hall.hallname}">
+                    <h:outputText value="#{hall.hallname}" />
+                </p:column>
+                <p:column headerText="תכולה" sortBy="#{hall.hallcapacity}" filterBy="#{hall.hallcapacity}">
+                    <h:outputText value="#{hall.hallcapacity}" />
+                </p:column>
+                <p:column headerText="סוג האולם" sortBy="#{hall.halltype}" filterBy="#{hall.halltype}">
+                    <h:outputText value="#{hall.halltype}" />
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandButton value = "עריכה" update=":dialogs:manage-hall-content"
+                        oncomplete="PF('manageHallDialog').show()"
+                        process="@this" style="background-color: yellowgreen; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{hall}" target="#{hallController.selectedHall}" />
+                        <p:resetInput target=":dialogs:manage-hall-content" />
+                    </p:commandButton>
+                    <p:commandButton value="מחיקה" process="@this" oncomplete="PF('deleteHallDialog').show()" style="background-color: red; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{hall}" target="#{hallController.selectedHall}" />
+                    </p:commandButton>
+                    <p:commandButton value="מושבים" process="@this" action="#{hallController.redirectSeats}" 
+                                     style="background-color: lightskyblue; color: darkslategray;">
+                        <f:setPropertyActionListener value="#{hall}" target="#{hallController.selectedHall}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        <!--\\dialogs//-->
+        <h:form id="dialogs">
+            <!--\\selected object detailes for create or edit//-->
+            <p:dialog header="Hall Details" showEffect="fade" modal="true" widgetVar="manageHallDialog"
+                responsive="true">
+                <p:outputPanel id="manage-hall-content" >
+                    <p:outputPanel rendered="#{not empty hallController.selectedHall}">
+                        <div class="field">
+                            <p:outputLabel for="name">שם</p:outputLabel>
+                            <p:inputText id="name" value="#{hallController.selectedHall.hallname}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="capacity">תכולה</p:outputLabel>
+                            <p:inputText id="capacity" value="#{hallController.selectedHall.hallcapacity}" required="true" />
+                        </div>
+                        <div class="field-select">
+                            <p:outputLabel for="venue">שייך למתחם</p:outputLabel>
+                            <p:selectOneMenu id="venue" value="#{hallController.selectedHall.venueid}" converter="venueConverter">
+                                <f:selectItems value="#{venueSelectorHelper.venues}" var="venueitem" 
+                                               itemLabel="#{venueitem.venuename}" itemValue="#{venueitem.venueid.toString()}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="field-select">
+                            <p:outputLabel for="type">סוג האולם</p:outputLabel>
+                            <p:selectOneMenu id="type" value="#{hallController.selectedHall.halltype}">
+                                <f:selectItem itemLabel="ישיבה" itemValue="ישיבה"/>
+                                <f:selectItem itemLabel="עמידה" itemValue="עמידה"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="אישור" actionListener="#{hallController.hallDialogClosed}"
+                        update="manage-hall-content" process="manage-hall-content @this" />
+                    <p:commandButton value="ביטול" onclick= "PF('manageHallDialog').hide()" type="button" />
+                </f:facet>
+            </p:dialog>
+            
+            <!--\\confirmation dialog before delete//-->
+            <p:confirmDialog widgetVar="deleteHallDialog" showEffect="fade" width="300"
+                message="האם למחוק את האולם?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{hallController.deleteHall}"
+                    process="@this" oncomplete="PF('deleteHallDialog').hide()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteHallDialog').hide()" />
+            </p:confirmDialog>
+            <p:confirmDialog widgetVar="deleteSelectedHallsDialog" showEffect="fade" width="300"
+                message="האם למחוק את האולמות?" header="אישור מחיקה" severity="warn">
+                <p:commandButton value="כן" actionListener="#{hallController.deleteSelectedHalls}"
+                    process="@this" oncomplete="PF('deleteSelectedHallsDialog').hide() PF('delete-halls-button').disable()" />
+                <p:commandButton value="לא" type="button"
+                    onclick="PF('deleteSelectedHallsDialog').hide()" />
+            </p:confirmDialog>   
+        </h:form>
+    </h:body>
+</html>
